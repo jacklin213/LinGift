@@ -47,7 +47,7 @@ public class LinGift extends JavaPlugin {
 	private File configFile;
 
 	public void onDisable() {
-		log.info("[GiftSend] Disabled");
+		log.info("[LinGift] Disabled");
 	}
 
 	public void onEnable() {
@@ -109,7 +109,7 @@ public class LinGift extends JavaPlugin {
 
 		OI = (OddItem) getServer().getPluginManager().getPlugin("OddItem");
 		if (OI != null) {
-			log.info("[GiftSend] Successfully connected with OddItem");
+			log.info("[LinGift] Successfully connected with OddItem");
 		}
 
 		if (useEco) {
@@ -123,8 +123,8 @@ public class LinGift extends JavaPlugin {
 		}
 
 		// Print that the plugin has been enabled!
-		log.info("[GiftSend] version " + pdfFile.getVersion()
-				+ " by nitnelave is enabled!");
+		log.info("[LinGift] version " + pdfFile.getVersion()
+				+ " by jacklin213 is enabled!");
 	}
 
 	private Boolean setupEconomy() {
@@ -158,7 +158,7 @@ public class LinGift extends JavaPlugin {
 
 			if (!permissions_config.equalsIgnoreCase("false")) {
 				if (permissions_config.equalsIgnoreCase("permissions")) {
-					canUseCommand = player.hasPermission("GiftSend.send");
+					canUseCommand = player.hasPermission("LinGift.send");
 				} else if (permissions_config.equalsIgnoreCase("OP"))
 					canUseCommand = player.isOp();
 
@@ -174,7 +174,7 @@ public class LinGift extends JavaPlugin {
 				}
 
 				if (!canUseCommand) {
-					canUseCommand = player.hasPermission("GiftSend.nofee");
+					canUseCommand = player.hasPermission("LinGift.nofee");
 					paying = false;
 				}
 			}
@@ -479,7 +479,7 @@ public class LinGift extends JavaPlugin {
 			}
 
 		} catch (Exception e) {
-			log.info("[GiftSend] Offline transfer to " + recipient
+			log.info("[LinGift] Offline transfer to " + recipient
 					+ " failed: " + e);
 		}
 	}
