@@ -1,0 +1,10 @@
+name: LinGift
+main: me.jacklin213.lingift.LinGift
+version: 0.9
+author: jacklin213
+softdepend: [Vault]
+commands:
+    send:
+        description: Send items to other players. Defaults to item in hand.
+        usage: /<command> [playername] [amount] (item_id or name) (damage/durability)
+        aliases: gift

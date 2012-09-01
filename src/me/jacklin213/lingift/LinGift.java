@@ -1,7 +1,7 @@
 package me.jacklin213.lingift;
 
 //java stuff
-import info.somethingodd.bukkit.OddItem.OddItem;
+import info.somethingodd.OddItem.OddItem;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -53,7 +53,7 @@ public class LinGift extends JavaPlugin {
 	public void onEnable() {
 
 		configFile = new File(getDataFolder() + "/config.yml");
-		new SGPlayerListener(this);
+		new LGPlayerListener(this);
 
 		dataFolder = getDataFolder();
 		if (!new File(dataFolder.toString()).exists()) {
@@ -123,8 +123,8 @@ public class LinGift extends JavaPlugin {
 		}
 
 		// Print that the plugin has been enabled!
-		log.info("[LinGift] version " + pdfFile.getVersion()
-				+ " by jacklin213 is enabled!");
+		log.info("[LinGift] version : " + pdfFile.getVersion()
+				+ " by jacklin213 & (Former Author) nitnelave is enabled!");
 	}
 
 	private Boolean setupEconomy() {
@@ -231,7 +231,7 @@ public class LinGift extends JavaPlugin {
 					} catch (NumberFormatException e) {
 						if (OI != null) { // get the OddItem name
 							try {
-								givetypeid = OI.getItemStack(itemstring)
+								givetypeid = OddItem.getItemStack(itemstring)
 										.getTypeId();
 							} catch (IllegalArgumentException ex) {
 								errormsg = "Did you mean : " + ex.getMessage()

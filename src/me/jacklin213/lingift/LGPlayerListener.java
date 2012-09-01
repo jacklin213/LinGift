@@ -14,10 +14,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class SGPlayerListener implements Listener {
+public class LGPlayerListener implements Listener {
 	public static LinGift plugin;
 
-	public SGPlayerListener(LinGift instance) {
+	public LGPlayerListener(LinGift instance) {
 		plugin = instance;
 	}
 
