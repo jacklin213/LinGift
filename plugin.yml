@@ -1,8 +1,11 @@
 name: LinGift
-main: me.jacklin213.lingift.LinGift
-version: 0.9
+discription: A plugin which can Gift or Send items to other players use things in your inventory
+version: 0.9.5
 author: jacklin213
+
+main: me.jacklin213.lingift.LinGift
 softdepend: [Vault]
+
 commands:
     send:
         description: Send items to other players. Defaults to item in hand.

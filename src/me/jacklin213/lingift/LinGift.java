@@ -1,21 +1,16 @@
 package me.jacklin213.lingift;
 
-//java stuff
 import info.somethingodd.OddItem.OddItem;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 //bukkit stuff
-
+import me.jacklin213.lingift.listeners.LGPlayerListener;
+import me.jacklin213.lingift.utils.LGConfigWriter;
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -28,85 +23,44 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class LinGift extends JavaPlugin {
-	private static Logger log = Logger.getLogger("Minecraft");
+
+	public LGPlayerListener lgpl = new LGPlayerListener(this);
+	public LGConfigWriter lgcw = new LGConfigWriter(this);
+	public static Logger log = Logger.getLogger("Minecraft");
+	public static OddItem OI = null;
+	public static File dataFolder;
+	public static Economy economy = null;
+	
 	private int maxradius = 0;
 	private boolean allowoffline = false;
 	private boolean crossWorld = true;
 	private boolean useEco = false;
-	public static OddItem OI = null;
-	private static File dataFolder;
 	private ArrayList<Integer> tools = new ArrayList<Integer>(Arrays.asList(
 			256, 257, 258, 259, 267, 268, 269, 270, 271, 272, 273, 274, 275,
 			276, 277, 278, 279, 283, 284, 285, 286, 290, 291, 292, 293, 294,
 			298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310,
-			311, 312, 313, 314, 315, 316, 317, 346, 359)); // tools that can be
-															// damaged
-	double fee = 0;
-	public static Economy economy = null;
+			311, 312, 313, 314, 315, 316, 317, 346, 359)); // tools that can be damaged
 	private FileConfiguration config;
-	private File configFile;
-
+	double fee = 0;
+	
 	public void onDisable() {
 		log.info("[LinGift] Disabled");
 	}
 
 	public void onEnable() {
-
-		configFile = new File(getDataFolder() + "/config.yml");
-		new LGPlayerListener(this);
-
-		dataFolder = getDataFolder();
-		if (!new File(dataFolder.toString()).exists()) {
-			new File(dataFolder.toString()).mkdir();
-		}
-
-		File yml = new File(dataFolder + "/config.yml");
-		File offlinesends = new File(dataFolder + "/offline.txt");
-
-		if (!yml.exists()) {
-			new File(dataFolder.toString()).mkdir();
-			try {
-				yml.createNewFile();
-			} catch (IOException ex) {
-				System.out.println("cannot create file " + yml.getPath());
-			}
-
-			config = getConfig();
-
-			config.set("max-range", 100);
-			config.set("allow-offine", true);
-			config.set("use-permissions", "permissions");
-			config.set("transaction-fee", 0.0);
-			config.set("allow-cross-world-sending", true);
-			config.set("use-economy", false);
-			try {
-				config.save(configFile);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		if (!offlinesends.exists()) {
-			try {
-				offlinesends.createNewFile();
-			} catch (IOException e) {
-				System.out
-						.println("cannot create file " + offlinesends.getPath()
-								+ "/" + offlinesends.getName());
-			}
-		}
-
+		dataFolder = new File("plugins" + File.separator + "LinGift"
+				+ File.separator);
+		LGConfigWriter.createConfig();
 		config = getConfig();
-
+		//Assign variables to config stuff
 		maxradius = config.getInt("max-range", 0);
 		allowoffline = config.getBoolean("allow-offline", false);
 		fee = config.getDouble("transaction-fee", 0);
 		crossWorld = config.getBoolean("allow-cross-world-sending", true);
 		useEco = config.getBoolean("use-economy", false);
-
 		// Get the information from the plugin.yml file.
 		PluginDescriptionFile pdfFile = this.getDescription();
-
+		//Checks depedencies
 		OI = (OddItem) getServer().getPluginManager().getPlugin("OddItem");
 		if (OI != null) {
 			log.info("[LinGift] Successfully connected with OddItem");
@@ -137,7 +91,8 @@ public class LinGift extends JavaPlugin {
 
 		return (economy != null);
 	}
-
+	
+	//Command process
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
 		boolean canUseCommand = true;
@@ -434,53 +389,12 @@ public class LinGift extends JavaPlugin {
 			short durability, int giveamount, String playername) {
 		// player is not online, store in offline.txt
 		if (recipient == null || !recipient.isOnline()) {
-			writeOffline(sender, playername, givetypeid, durability,
+			LGConfigWriter.writeOffline(sender, playername, givetypeid, durability,
 					giveamount, false);
 		}
 		// both online, do in real time
 		else {
 			sendOnline(sender, recipient, givetypeid, durability, giveamount);
-		}
-	}
-
-	static void writeOffline(Player sender, String recipient, int givetypeid,
-			short durability, int giveamount, boolean listener) {
-		File offlineFile = new File(dataFolder + "/offline.txt");
-		// Write the send to file
-		try {
-
-			BufferedWriter out = new BufferedWriter(new FileWriter(offlineFile,
-					true));
-
-			String textToWrite = recipient + ":" + givetypeid + ":"
-					+ giveamount + ":" + sender.getName() + ":" + durability;
-
-			out.write(textToWrite);
-			out.newLine();
-
-			// Close the output stream
-			out.close();
-
-			String materialname = Material.getMaterial(givetypeid).toString()
-					.toLowerCase().replace("_", " ");
-			if (giveamount > 1) {
-				if (materialname.endsWith("s") || materialname.endsWith("z"))
-					materialname = materialname + "es";
-				else
-					materialname = materialname + "s";
-			}
-
-			if (!listener) {
-				sender.sendMessage(ChatColor.GRAY + "You gave "
-						+ ChatColor.GREEN + recipient + " " + ChatColor.GRAY
-						+ giveamount + " " + ChatColor.RED + materialname);
-				sender.sendMessage(ChatColor.GRAY
-						+ "They will receive it when they log in.");
-			}
-
-		} catch (Exception e) {
-			log.info("[LinGift] Offline transfer to " + recipient
-					+ " failed: " + e);
 		}
 	}
 
@@ -519,7 +433,7 @@ public class LinGift extends JavaPlugin {
 					+ ChatColor.GRAY + " gave you " + giveamount + " "
 					+ ChatColor.RED + materialname);
 			if (amount_left > 0) {
-				writeOffline(sender, recipient.getName(), givetypeid,
+				LGConfigWriter.writeOffline(sender, recipient.getName(), givetypeid,
 						durability, amount_left, false);
 				sender.sendMessage(ChatColor.GREEN
 						+ recipient.getName()
@@ -543,4 +457,5 @@ public class LinGift extends JavaPlugin {
 		}
 	}
 
+	//end of class
 }
