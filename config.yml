@@ -1,0 +1,26 @@
+# ========== [LinGift] ========= #
+
+# Check for updates
+UpdateCheck: true
+
+# Block-Radius restriction
+Restriction: 
+  enable: true
+  max-radius: 100
+  
+# Allow sending items to offline players
+Allow-offine: true
+
+# Use permissions? [Vault] required
+  # use-permissions: permissions # - Uses permissions
+  # use-permissions: false # - Does not check for permissions
+  # use-permissions: op # - Only op's can use this plugin
+Use-permissions: permissions
+
+# Use economy? [Vault] required
+Eco:
+  use: false
+  transaction-fee: 0.0
+
+# Allow sending items to players in a different world
+Cross-world-sending: true
