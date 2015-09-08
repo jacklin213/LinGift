@@ -1,8 +1,6 @@
 package me.jacklin213.lingift;
 
 //java stuff
-import info.somethingodd.OddItem.OddItem;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +37,7 @@ public class LinGift extends JavaPlugin {
 	 * Configuration Handler
 	 */
 	public ConfigHandler configHandler;
-	public static OddItem OI = null;
+//	public static OddItem OI = null;
 	public static Economy economy = null;
 	
 	public int maxRadius = 0;
@@ -69,7 +67,7 @@ public class LinGift extends JavaPlugin {
 		configHandler = new ConfigHandler(this);
 		
 		//Setup OddItem
-		setupOddItem();
+//		setupOddItem();
 		//If using economy, check for vault
 		if (useEco) {
 			if (!setupEconomy()) {
@@ -102,13 +100,13 @@ public class LinGift extends JavaPlugin {
 		return (economy != null);
 	}
 	
-	private void setupOddItem() {
-		// Check to see if plugins folder has OddItem
-		OI = (OddItem) getServer().getPluginManager().getPlugin("OddItem");
-		if (OI != null) {
-			log.info("Successfully connected with OddItem");
-		}
-	}
+//	private void setupOddItem() {
+//		// Check to see if plugins folder has OddItem
+//		OI = (OddItem) getServer().getPluginManager().getPlugin("OddItem");
+//		if (OI != null) {
+//			log.info("Successfully connected with OddItem");
+//		}
+//	}
 	
 	private void updateCheck(boolean updateCheck, boolean autoUpdate, int ID) {
 		if (updateCheck && !autoUpdate) {

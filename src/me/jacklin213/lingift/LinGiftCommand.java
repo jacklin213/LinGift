@@ -1,7 +1,5 @@
 package me.jacklin213.lingift;
 
-import info.somethingodd.OddItem.OddItem;
-
 import java.util.HashMap;
 
 import net.milkbowl.vault.economy.Economy;
