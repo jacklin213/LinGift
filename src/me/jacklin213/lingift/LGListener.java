@@ -5,11 +5,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class LGPlayerListener implements Listener {
+public class LGListener implements Listener {
 	
-	public static LinGift plugin;
+	private LinGift plugin;
 
-	public LGPlayerListener(LinGift instance) {
+	public LGListener(LinGift instance) {
 		plugin = instance;
 	}
 
