@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 
 import me.jacklin213.lingift.utils.ConfigHandler;
 import me.jacklin213.lingift.utils.OfflineFileHandler;
-import me.jacklin213.lingift.utils.UpdateChecker;
+import me.jacklin213.lingift.utils.Updater;
+import me.jacklin213.lingift.utils.Updater.UpdateResult;
+import me.jacklin213.lingift.utils.Updater.UpdateType;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.plugin.PluginManager;
@@ -24,7 +26,7 @@ public class LinGift extends JavaPlugin {
 	
 	public LGListener listener = new LGListener(this);
 	public LinGiftCommand LGC = new LinGiftCommand(this);
-	public UpdateChecker updateChecker;
+	public Updater updater;
 	/**
 	 * Contains all the methods used to send items
 	 */
@@ -78,13 +80,9 @@ public class LinGift extends JavaPlugin {
 		}
 		//Update Checking
 		Boolean updateCheck = Boolean.valueOf(getConfig().getBoolean("UpdateCheck"));
+		Boolean autoUpdate = Boolean.valueOf(getConfig().getBoolean("AutoUpdate"));
 		
-		this.updateChecker = new UpdateChecker(this, "http://dev.bukkit.org/server-mods/lingift/files.rss");
-				
-		if ((updateCheck) && (this.updateChecker.updateNeeded())) {
-			log.info(String.format("[%s] A new update is avalible, Version: %s", getDescription().getName(), this.updateChecker.getVersion()));
-			log.info(String.format("[%s] Get it now from: %s", getDescription().getName(), this.updateChecker.getLink()));
-		}
+		this.updateCheck(updateCheck, autoUpdate, 43468);
 		//Register events/commands
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(listener, this);
@@ -109,6 +107,27 @@ public class LinGift extends JavaPlugin {
 		OI = (OddItem) getServer().getPluginManager().getPlugin("OddItem");
 		if (OI != null) {
 			log.info("Successfully connected with OddItem");
+		}
+	}
+	
+	private void updateCheck(boolean updateCheck, boolean autoUpdate, int ID) {
+		if (updateCheck && !autoUpdate) {
+			updater = new Updater(this, ID, this.getFile(), UpdateType.NO_DOWNLOAD, true);
+			if (updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
+			    log.info("New version available! " + updater.getLatestName());
+			} else if (updater.getResult() == UpdateResult.NO_UPDATE) {
+				log.info(String.format("You are running the latest version of %s", getDescription().getName()));
+			}
+		} else if (autoUpdate && !updateCheck) {
+			updater = new Updater(this, ID, this.getFile(), UpdateType.NO_VERSION_CHECK, true);
+		} else if (autoUpdate && updateCheck) {
+			updater = new Updater(this, ID, this.getFile(), UpdateType.DEFAULT, true);
+			if (updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
+			    log.info("New version available! " + updater.getLatestName());
+			}
+			if (updater.getResult() == UpdateResult.NO_UPDATE) {
+				log.info(String.format("You are running the latest version of %s", getDescription().getName()));
+			}
 		}
 	}
 }
