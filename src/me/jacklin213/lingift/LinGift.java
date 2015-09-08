@@ -124,8 +124,7 @@ public class LinGift extends JavaPlugin {
 			updater = new Updater(this, ID, this.getFile(), UpdateType.DEFAULT, true);
 			if (updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
 			    log.info("New version available! " + updater.getLatestName());
-			}
-			if (updater.getResult() == UpdateResult.NO_UPDATE) {
+			} else if (updater.getResult() == UpdateResult.NO_UPDATE) {
 				log.info(String.format("You are running the latest version of %s", getDescription().getName()));
 			}
 		}
