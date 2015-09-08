@@ -43,13 +43,13 @@ public class OfflineFileHandler {
 		return offlineFile;
 	}
 	
-	public void writeOfflineFile(Player sender, String recipient, int givetypeid, short durability, int giveamount, boolean listener) {
+	public void writeOfflineFile(Player sender, String recipient, Material itemtype, short durability, int giveamount, boolean listener) {
 		// Write the send to file
 		try {
 
 			BufferedWriter out = new BufferedWriter(new FileWriter(offlineFile, true));
 
-			String textToWrite = recipient + ":" + givetypeid + ":"	+ giveamount + ":" + sender.getName() + ":" + durability;
+			String textToWrite = recipient + ":" + itemtype.toString() + ":" + giveamount + ":" + sender.getName() + ":" + durability;
 
 			out.write(textToWrite);
 			out.newLine();
@@ -57,7 +57,8 @@ public class OfflineFileHandler {
 			// Close the output stream
 			out.close();
 
-			String materialname = Material.getMaterial(givetypeid).toString().toLowerCase().replace("_", " ");
+			//String materialname = Material.getMaterial(givetypeid).toString().toLowerCase().replace("_", " ");
+			String materialname = itemtype.toString().toLowerCase().replace("_", " ");
 			if (giveamount > 1) {
 				if (materialname.endsWith("s") || materialname.endsWith("z"))
 					materialname = materialname + "es";
@@ -98,24 +99,27 @@ public class OfflineFileHandler {
 				splittext = line.split(":");
 				if (splittext[0].equals(player.getName())) {
 					if (player.getInventory().firstEmpty() >= 0) {
-						int givetypeid = Integer.parseInt(splittext[1]);
+						//int givetypeid = Integer.parseInt(splittext[1]);
+						Material itemtype = Material.matchMaterial(splittext[2]);
 						int giveamount = Integer.parseInt(splittext[2]);
 						short givedurability = Short.valueOf(splittext[4]);
 
 						int tmpamount = giveamount;
-						int stack_size = Material.getMaterial(givetypeid).getMaxStackSize();
-						if (givetypeid == 357)
+						int stack_size = itemtype.getMaxStackSize();
+						//if (givetypeid == 357)
+						if (itemtype == Material.COOKIE)
 							stack_size = 8;
 						while (tmpamount > 0) {
 							if (player.getInventory().firstEmpty() == -1)
 								break;
-							player.getInventory().addItem(new ItemStack(givetypeid, Math.min(tmpamount, stack_size), givedurability));
+							player.getInventory().addItem(new ItemStack(itemtype, Math.min(tmpamount, stack_size), givedurability));
 							tmpamount -= Math.min(tmpamount, stack_size);
 						}
 						if (tmpamount > 0) {
-							writeOfflineFile(player, splittext[3], givetypeid, givedurability, tmpamount, true);
+							writeOfflineFile(player, splittext[3], itemtype, givedurability, tmpamount, true);
 						}
-						String materialname = Material.getMaterial(givetypeid).toString().toLowerCase().replace("_", " ");
+						//String materialname = Material.getMaterial(givetypeid).toString().toLowerCase().replace("_", " ");
+						String materialname = itemtype.toString().toLowerCase().replace("_", " ");
 						if (giveamount > 1)
 							materialname = materialname + "s";
 

@@ -82,11 +82,13 @@ public class LinGiftCommand implements CommandExecutor {
 					String playername = args[0];
 					String itemamount = "1"; // default value
 					String tmpdurability = null;
-					String itemstring = null;
+					//String itemstring = null;
+					Material itemtype = null;
 					if (args.length > 1)
 						itemamount = args[1];
 					if (args.length > 2)
-						itemstring = args[2];
+						//itemstring = args[2];
+						itemtype = Material.matchMaterial(args[2]);
 					if (args.length > 3)
 						tmpdurability = args[3];
 
@@ -97,7 +99,7 @@ public class LinGiftCommand implements CommandExecutor {
 					} catch (NumberFormatException e) {
 						return false;
 					}
-					int givetypeid = 0;
+					//int givetypeid = 0;
 					short durability = 0;
 
 					if (tmpdurability != null) {
@@ -108,46 +110,47 @@ public class LinGiftCommand implements CommandExecutor {
 						}
 					}
 					// checks to see if the item works
-					if (itemstring == null) {
+					if (itemtype == null) {
 						if (player.getItemInHand().getType() != null) {
-							itemstring = Integer.toString(player.getItemInHand().getTypeId());
+							//itemstring = Integer.toString(player.getItemInHand().getTypeId());
+							itemtype = player.getItemInHand().getType();
 							durability = player.getItemInHand().getDurability();
 						} else {
 							player.sendMessage("Hold an item in your hand, or use this syntax :");
 							return false;
 						}
 					}
-					try {
-						givetypeid = Integer.parseInt(itemstring);
-					} catch (NumberFormatException e) {
-						if (LinGift.OI != null) { // get the OddItem name
-							try {
-								givetypeid = OddItem.getItemStack(itemstring).getTypeId();
-							} catch (IllegalArgumentException ex) {
-								errormsg = "Did you mean : " + ex.getMessage()
-										+ " ?";
-							}
-						} else { // get the ENUM name
-							try {
-								givetypeid = Material.getMaterial(itemstring.toUpperCase()).getId();
-							} catch (NullPointerException n) {
-								errormsg = "The item '"
-										+ itemstring.toUpperCase()
-										+ "' does not exist.";
-							}
-						}
-					}
+//					try {
+//						//givetypeid = Integer.parseInt(itemstring);
+//						givetypeid = itemtype.getId();
+//					} catch (NumberFormatException e) {
+//						if (LinGift.OI != null) { // get the OddItem name
+//							try {
+//								givetypeid = OddItem.getItemStack(args[2]).getTypeId();
+//							} catch (IllegalArgumentException ex) {
+//								errormsg = "Did you mean : " + ex.getMessage() + " ?";
+//							}
+//						} 
+//						else { // get the ENUM name
+//							try {
+//								givetypeid = itemtype.getId();
+//							} catch (NullPointerException n) {
+//								errormsg = "The item '"	+ /* itemstring.toUpperCase() */ itemtype.toString() + "' does not exist.";
+//							}
+//						}
+//					}
 
 					// allows offline transfers
 					Player recipient = Bukkit.getServer().getPlayer(playername);
 
 					// Checks to see if you have enough
-					itemsarray = player.getInventory().all(Material.getMaterial(givetypeid));
+					//itemsarray = player.getInventory().all(Material.getMaterial(givetypeid));
+					itemsarray = player.getInventory().all(itemtype);
 					int playerHasInInventory = 0;
 
 					for (ItemStack itemstack : itemsarray.values()) {
 						if ((itemstack.getDurability() == durability || 
-								plugin.tools.contains(givetypeid)) && itemstack.getAmount() > 0) {
+								plugin.tools.contains(/*givetypeid*/itemtype.getId())) && itemstack.getAmount() > 0) {
 							playerHasInInventory = playerHasInInventory	+ itemstack.getAmount();
 						}
 
@@ -197,13 +200,13 @@ public class LinGiftCommand implements CommandExecutor {
 									player.getInventory().removeItem(itemstack);
 								} else if (itemstack.getAmount() > tmp_amount) {
 									player.getInventory().removeItem(itemstack);
-									player.getInventory().addItem(new ItemStack(givetypeid, (itemstack.getAmount() - tmp_amount), durability));
+									player.getInventory().addItem(new ItemStack(itemtype, (itemstack.getAmount() - tmp_amount), durability));
 									tmp_amount = 0;
 								}
 							}
 						}
 
-						plugin.SM.sendToPlayer(player, recipient, givetypeid, durability, giveamount - tmp_amount, playername);
+						plugin.SM.sendToPlayer(player, recipient, itemtype, durability, giveamount - tmp_amount, playername);
 
 						int amount_left = giveamount - tmp_amount;
 						if (tmp_amount > 0) { 
@@ -215,14 +218,14 @@ public class LinGiftCommand implements CommandExecutor {
 										player.getInventory().removeItem(itemstack);
 									} else if (itemstack.getAmount() > tmp_amount) {
 										player.getInventory().removeItem(itemstack);
-										player.getInventory().addItem(new ItemStack(givetypeid, (itemstack.getAmount() - tmp_amount), durability));
+										player.getInventory().addItem(new ItemStack(itemtype, (itemstack.getAmount() - tmp_amount), durability));
 										tmp_amount = 0;
 									}
 								}
 								if (tmp_amount == 0)
 									break;
 							}
-							plugin.SM.sendToPlayer(player, recipient, givetypeid, (byte) 0, amount_left - tmp_amount, playername);
+							plugin.SM.sendToPlayer(player, recipient, itemtype, (byte) 0, amount_left - tmp_amount, playername);
 						}
 
 						amount_left = giveamount - tmp_amount;
@@ -240,14 +243,14 @@ public class LinGiftCommand implements CommandExecutor {
 										player.getInventory().removeItem(itemstack);
 									} else if (itemstack.getAmount() > tmp_amount) {
 										player.getInventory().removeItem(itemstack);
-										player.getInventory().addItem(new ItemStack(givetypeid, (itemstack.getAmount() - tmp_amount), durability));
+										player.getInventory().addItem(new ItemStack(itemtype, (itemstack.getAmount() - tmp_amount), durability));
 										tmp_amount = 0;
 									}
 								}
 								if (tmp_amount == 0)
 									break;
 							}
-							plugin.SM.sendToPlayer(player, recipient, givetypeid, tmpDurability, amount_left - tmp_amount, playername);
+							plugin.SM.sendToPlayer(player, recipient, itemtype, tmpDurability, amount_left - tmp_amount, playername);
 						}
 						if (paying) {
 							if (useEco) {
