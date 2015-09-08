@@ -7,10 +7,9 @@ import me.jacklin213.lingift.LinGift;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-
 public class ConfigHandler {
 	
-	public static LinGift plugin;
+	private LinGift plugin;
 	
 	private FileConfiguration config;
 	private File configFile;
@@ -21,59 +20,62 @@ public class ConfigHandler {
 	boolean useEco = false;
 	
 	/**
-	 * Constuctor for ConfigHandler - Runs the createConfig() method.
+	 * Constuctor for ConfigHandler, Runs the createConfig() method.
 	 */
-	public ConfigHandler(LinGift instance){
+	public ConfigHandler(LinGift instance) {
 		plugin = instance;
+		config = plugin.getConfig();
 		createConfig();
+		setConfigValues();
 	}
 	
 	/**
-	 * Copys configuration from defaults and makes it into a file
+	 * Copys configuration from defaults and makes it into a file.
 	 */
-	public void createConfig(){
+	public void createConfig() {
 		File configFile = new File(plugin.getDataFolder() + File.separator
 				+ "config.yml");
 		if (!configFile.exists()) {
 			// Tells console its creating a config.yml
-			plugin.getLogger().info("Cannot find config.yml, Generating now....");
-			plugin.getLogger().info("Config generated !");
-			plugin.getConfig().options().copyDefaults(true);
+			LinGift.log.info("Cannot find config.yml, Generating now....");
 			plugin.saveDefaultConfig();
+			LinGift.log.info("Config generated !");
 		}
 	}
 	
 	/**
 	 * Reloads the configuration and sends the sender a message.
-	 * @param sender - CommandSender player/console
-	 * @param message - String to send on completion
+	 *  
+	 * @param sender CommandSender player/console
+	 * @param message String to send on completion
 	 */
-	public void reloadConfig(CommandSender sender, String message){
+	public void reloadConfig(CommandSender sender, String message) {
 		plugin.reloadConfig();
 		sender.sendMessage(message);
 	}
 	
 	/**
-	 * Gets the config from the plugin
-	 * @return - the Configuration
+	 * Gets the config from the plugin.
+	 * 
+	 * @return the Configuration
 	 */
-	public FileConfiguration getConfig(){
-		config = plugin.getConfig();
+	public FileConfiguration getConfig() {
 		return config;
 	}
 	
 	/**
-	 * Gets the actual file from the system
-	 * @return - Configuration File
+	 * Gets the actual file from the system.
+	 * 
+	 * @return the Configuration File
 	 */
-	public File getConfigFile(){
+	public File getConfigFile() {
 		return configFile;
 	}
 	
 	/**
 	 * Gets all configuration values
 	 */
-	public void getConfigValues(){
+	public void getConfigValues() {
 		maxRadius = config.getInt("Restriction.max-radius", 0);
 		allowOfflineSend = config.getBoolean("Allow-offline", false);
 		useEco = config.getBoolean("Eco.use", false);
@@ -81,7 +83,7 @@ public class ConfigHandler {
 		crossWorldSend = config.getBoolean("Cross-world-sending", true);
 	}
 	
-	public void setConfigValues(){
+	public void setConfigValues() {
 		plugin.maxRadius = maxRadius;
 		plugin.allowOfflineSend = allowOfflineSend;
 		plugin.useEco = useEco;

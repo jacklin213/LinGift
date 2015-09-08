@@ -17,16 +17,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class OfflineFileHandler {
 	
-	public static LinGift plugin;
-	
+	private LinGift plugin;
 	private File offlineFile;
 	
-	public OfflineFileHandler(File file, LinGift instance){
+	public OfflineFileHandler(File file, LinGift instance) {
 		plugin = instance;
 		this.offlineFile = file;
 		
-		if (this.offlineFile.exists() ==  false){
+		if (!this.offlineFile.exists()) {
 			try {
+				this.offlineFile.mkdirs();
 				this.offlineFile.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -35,10 +35,11 @@ public class OfflineFileHandler {
 	}
 	
 	/**
-	 * Gets the offline File from the OfflineFileHandler class
+	 * Gets the offline File from the OfflineFileHandler class.
+	 * 
 	 * @return - The offlineFile
 	 */
-	public File getOfflineFile(){
+	public File getOfflineFile() {
 		return offlineFile;
 	}
 	
@@ -70,20 +71,19 @@ public class OfflineFileHandler {
 			}
 
 		} catch (Exception e) {
-			plugin.log.info(String.format("[%s] Offline transfer to " + recipient + " failed: " + e, plugin.getDescription().getName()));
+			LinGift.log.info("Offline transfer to " + recipient + " failed: " + e);
 		}
 	}
 	
 	
-	public void writeTempFile(Player player){
+	public void writeTempFile(Player player) {
 		File tempFile = new File(plugin.getDataFolder() + File.separator + "offline.tmp");
 
 		if (!tempFile.exists()) {
 			try {
 				tempFile.createNewFile();
 			} catch (IOException e) {
-				System.out.println("cannot create temp file "
-						+ tempFile.getPath() + "/" + tempFile.getName());
+				LinGift.log.severe("Cannot create temp file: " + tempFile.getPath() + "/" + tempFile.getName());
 			}
 		}
 
@@ -150,7 +150,7 @@ public class OfflineFileHandler {
 			tempFile.renameTo(offlineFile);
 
 		} catch (IOException e) {
-			plugin.log.info(String.format("[%s] Offline file read error: " + e, plugin.getDescription().getName()));
+			LinGift.log.severe("Offline file read error: " + e);
 		}
 
 	}

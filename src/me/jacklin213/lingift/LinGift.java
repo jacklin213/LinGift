@@ -6,7 +6,6 @@ import info.somethingodd.OddItem.OddItem;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 import me.jacklin213.lingift.utils.ConfigHandler;
@@ -21,10 +20,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LinGift extends JavaPlugin {
 	
 	public static LinGift plugin;
+	public static Logger log;
 	
-	public Logger log = Logger.getLogger("Minecraft");
-	
-	public LGPlayerListener LGPL = new LGPlayerListener(this);
+	public LGListener listener = new LGListener(this);
 	public LinGiftCommand LGC = new LinGiftCommand(this);
 	public UpdateChecker updateChecker;
 	/**
@@ -53,33 +51,27 @@ public class LinGift extends JavaPlugin {
 			276, 277, 278, 279, 283, 284, 285, 286, 290, 291, 292, 293, 294,
 			298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310,
 			311, 312, 313, 314, 315, 316, 317, 346, 359));
-	List<String> commandAliases = new ArrayList<String>(Arrays.asList("gift", "send", "linsend"));
+	String[] commandAliases = {"gift", "send", "linsend"};
 	
 	@Override
 	public void onDisable() {
-		log.info(String.format("[%s] Disabled Version %s", getDescription()
-				.getName(), getDescription().getVersion()));
+		log.info(String.format("Disabled Version %s", getDescription().getVersion()));
 	}
 
 	@Override
 	public void onEnable() {
-		
-		// Sets the pluginFolder to the data folder
-		String pluginFolder = this.getDataFolder().getAbsolutePath();
-		(new File(pluginFolder)).mkdirs();
+		log = getLogger();
 		//Make offline.txt
-		this.OFH = new OfflineFileHandler(new File(pluginFolder + File.separator + "offline.txt"), this);
+		this.OFH = new OfflineFileHandler(new File(getDataFolder() + File.separator + "offline.txt"), this);
 		//Create config and get values
 		configHandler = new ConfigHandler(this);
-		configHandler.setConfigValues();
 		
 		//Setup OddItem
 		setupOddItem();
 		//If using economy, check for vault
 		if (useEco) {
 			if (!setupEconomy()) {
-				log.info(String.format("[%s] - Disabled due to no Vault dependency found!",
-						getDescription().getName()));
+				log.severe("Disabling due to no Vault dependency found!");
 				getServer().getPluginManager().disablePlugin(this);
 				return;
 			}
@@ -95,13 +87,12 @@ public class LinGift extends JavaPlugin {
 		}
 		//Register events/commands
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(LGPL, this);
+		pm.registerEvents(listener, this);
 		getCommand("lingift").setExecutor(LGC);
-		getCommand("lingift").setAliases(commandAliases);
+		getCommand("lingift").setAliases(Arrays.asList(commandAliases));
 
 		// Print that the plugin has been enabled!
-		log.info(String.format("[%s] Version: %s by jacklin213 & (Former Author) nitnelave is enabled!", 
-				getDescription().getName(), getDescription().getVersion()));
+		log.info(String.format("Version: %s by jacklin213 & (Former Author) nitnelave is now enabled!", getDescription().getVersion()));
 	}
 
 	private Boolean setupEconomy() {
@@ -113,11 +104,11 @@ public class LinGift extends JavaPlugin {
 		return (economy != null);
 	}
 	
-	private void setupOddItem(){
+	private void setupOddItem() {
 		// Check to see if plugins folder has OddItem
 		OI = (OddItem) getServer().getPluginManager().getPlugin("OddItem");
 		if (OI != null) {
-			log.info(String.format("[%s] Successfully connected with OddItem", getDescription().getName()));
+			log.info("Successfully connected with OddItem");
 		}
 	}
 }

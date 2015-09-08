@@ -7,9 +7,9 @@ import org.bukkit.inventory.ItemStack;
 
 public class SendMethod {
 	
-	public static LinGift plugin;
+	private LinGift plugin;
 	
-	public SendMethod(LinGift instance){
+	public SendMethod(LinGift instance) {
 		plugin = instance;
 	}
 	
@@ -17,9 +17,7 @@ public class SendMethod {
 		// player is not online, store in offline.txt
 		if (recipient == null || !recipient.isOnline()) {
 			plugin.OFH.writeOfflineFile(sender, playername, givetypeid, durability, giveamount, false);
-		}
-		// both online, do in real time
-		else {
+		} else { // both online, do in real time
 			sendOnline(sender, recipient, givetypeid, durability, giveamount);
 		}
 	}
@@ -27,7 +25,6 @@ public class SendMethod {
 	private void sendOnline(Player sender, Player recipient, int givetypeid, short durability, int giveamount) {
 		// make sure that the receiving player's inventory isn't full
 		if (recipient.getInventory().firstEmpty() >= 0) {
-
 			// remove the item
 			int amount_left = giveamount;
 			int stack_size = Material.getMaterial(givetypeid).getMaxStackSize();
